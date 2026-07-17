@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BURMA'S FINEST GAME SHOP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+            padding: 20px 15px;
+        }
+
+        /* Maintenance Screen */
+        #maintenance-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f172a;
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Modern Top Bar */
+        .app-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .brand-logo {
+            font-size: 1.25rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #38bdf8, #0284c7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Hero Status Banner */
+        .status-card {
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.2), rgba(56, 189, 248, 0.15));
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .status-card h1 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            color: #38bdf8;
+        }
+
+        .status-card p {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        /* Section Title */
+        .section-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #94a3b8;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Grid for Games/Services */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #38bdf8;
+        }
+
+        .game-icon {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .game-card h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .game-card p {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        /* Bottom Menu Utility List */
+        .utility-list {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 18px;
+            padding: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .utility-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+
+        .utility-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .utility-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.9rem;
+        }
+
+        /* Modern Full-Screen Checkout Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f172a;
+            z-index: 1000;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal-back {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+
+        /* Game Banner Dynamic */
+        .game-banner-box {
+            width: 100%;
+            height: 140px;
+            border-radius: 16px;
+            background-size: cover;
+            background-position: center;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-end;
+            padding: 15px;
+            background-color: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Package Display Container */
+        .package-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .pack-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.2s;
+        }
+
+        .pack-card.selected {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.08);
+        }
+
+        .pack-info h4 {
+            font-size: 1rem;
+            color: #f8fafc;
+            margin-bottom: 4px;
+        }
+
+        .pack-info p {
+            font-size: 0.9rem;
+            color: #38bdf8;
+            font-weight: bold;
+        }
+
+        .buy-now-btn {
+            background: #0284c7;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .buy-now-btn:hover {
+            background: #38bdf8;
+        }
+
+        /* Dynamic Input Section */
+        #dynamicOrderSection {
+            display: none;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 15px;
+            margin-top: 10px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Order Form Fields */
+        .form-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            flex: 1;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 10px;
+            color: white;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #38bdf8;
+        }
+
+        /* Payment Guide Box */
+        .payment-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 5px;
+        }
+
+        .pay-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .pay-number {
+            color: #38bdf8;
+            font-weight: bold;
+        }
+
+        /* File Upload Area */
+        .file-upload-wrapper {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .file-upload-wrapper input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            background: linear-gradient(90deg, #0284c7, #38bdf8);
+            color: #fff;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
+        }
+
+        /* Secondary Box Popups */
+        .box-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1e293b;
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 90%;
+            max-width: 420px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 20px;
+            border-radius: 20px;
+            z-index: 1001;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.5);
+        }
+
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+        }
+
+        .live-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .live-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+        }
+
+        .status-badge {
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .status-completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status-cancelled {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .message-box {
+            background: rgba(56, 189, 248, 0.05);
+            border-left: 3px solid #38bdf8;
+            padding: 12px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ဆိုင်ပိတ်သိမ်းချိန် မျက်နှာပြင် -->
+    <div id="maintenance-screen">
+        <h2 style="color: #38bdf8;">🏪 BURMA'S FINEST GAME SHOP</h2>
+        <br>
+        <p style="color: #cbd5e1;">စနစ်များကို ခေတ္တအဆင့်မြှင့်တင်နေပါသဖြင့် ဆိုင်ခေတ္တပိတ်ထားပါသည်ရှင်。<br>မကြာမီ ပြန်လည်ဖွင့်လှစ်ပေးပါမည်။</p>
+    </div>
+
+    <!-- Main Content -->
+    <div id="app-content">
+        <!-- Top Navigation -->
+        <div class="app-bar">
+            <div class="brand-logo">BURMA'S FINEST GAME SHOP</div>
+            <div class="nav-actions">
+                <button class="nav-btn" onclick="openPopup('msgPopup')">💬 မက်ဆေ့များ</button>
+                <button class="nav-btn" onclick="openPopup('orderPopup')">📋 အော်ဒါများ</button>
+            </div>
+        </div>
+
+        <!-- Banner / Intro -->
+        <div class="status-card">
+            <h1>မြန်မာနိုင်ငံ၏ အကောင်းဆုံး Game Shop</h1>
+            <p>ငွေကြိုဖြည့်ရန်မလို၊ ဝယ်ယူလိုသည့်အရာကို ရွေးချယ်ပြီး တိုက်ရိုက်ငွေလွှဲပြေစာဖြင့် အော်ဒါတင်နိုင်ပါပြီ။</p>
+        </div>
+
+        <!-- ဂိမ်းရွေးချယ်ရန် ကဏ္ဍ -->
+        <div class="section-header">ဂိမ်းများကို တိုက်ရိုက်ဝယ်ယူရန်</div>
+        <div class="game-grid">
+            <div class="game-card" onclick="openCheckout('mlbb', 'BURMA\'S FINEST GAME SHOP (MLBB)')">
+                <span class="game-icon">⚔️</span>
+                <h3>MLBB Diamonds</h3>
+                <p>Instant / 10-15 Mins</p>
+            </div>
+            <div class="game-card" onclick="openCheckout('pubg', 'PUBG Mobile')">
+                <span class="game-icon">🪂</span>
+                <h3>PUBG UC</h3>
+                <p>Global / Fast delivery</p>
+            </div>
+            <div class="game-card" onclick="openCheckout('freefire', 'Free Fire')">
+                <span class="game-icon">🔥</span>
+                <h3>Free Fire Diamonds</h3>
+                <p>ID ဖြည့်စနစ်</p>
+            </div>
+            <div class="game-card" onclick="openCheckout('other', 'Other Services')">
+                <span class="game-icon">📦</span>
+                <h3>Other Services</h3>
+                <p>Steam, iTunes, Codes</p>
+            </div>
+        </div>
+
+        <!-- Utility အောက်ခြေစာရင်း -->
+        <div class="section-header">အခြားကဏ္ဍများ</div>
+        <div class="utility-list">
+            <div class="utility-item" onclick="openPopup('historyPopup')">
+                <div class="utility-item-left"><span>📜</span> ဝယ်ယူမှုမှတ်တမ်း</div>
+                <span>➔</span>
+            </div>
+            <div class="utility-item" onclick="openPopup('luckyPopup')">
+                <div class="utility-item-left"><span>🎁</span> ကံစမ်းရန်အစီအစဉ်</div>
+                <span>➔</span>
+            </div>
+            <div class="utility-item" onclick="openPopup('guidePopup')">
+                <div class="utility-item-left"><span>ℹ️</span> အသုံးပြုနည်းလမ်းညွှန်</div>
+                <span>➔</span>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==================== CHECKOUT DIRECT ORDER MODAL ==================== -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-header">
+            <div class="modal-back" onclick="closeCheckout()">&larr; Back</div>
+            <div id="checkoutTitle" style="font-weight: bold; font-size: 1.1rem; color: #38bdf8;">Game Top Up</div>
+            <div></div>
+        </div>
+
+        <!-- Real-time Dynamic Game Image Banner -->
+        <div id="gameBanner" class="game-banner-box">
+            <h2 id="bannerGameText" style="text-shadow: 0 4px 10px rgba(0,0,0,0.8); color: white;"></h2>
+        </div>
+
+        <div class="section-header" style="font-size: 0.9rem;">ဝယ်ယူလိုသည့် ပက်ကေ့ချ် ရွေးချယ်ရန်</div>
+        
+        <!-- Package List Container -->
+        <div id="packageListContainer" class="package-container"></div>
+
+        <!-- DYNAMIC INPUT & PAYMENT SECTION -->
+        <div id="dynamicOrderSection">
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">🛒 အော်ဒါအချက်အလက် ဖြည့်သွင်းရန်</h3>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Player ID</label>
+                    <input type="text" class="form-input" id="playerId" placeholder="ဥပမာ - 12345678">
+                </div>
+                <div class="form-group" id="serverIdGroup">
+                    <label>Server ID</label>
+                    <input type="text" class="form-input" id="serverId" placeholder="ဥပမာ - 1234">
+                </div>
+            </div>
+
+            <!-- Selected Package Label Summary -->
+            <div style="margin-bottom: 15px; font-size: 0.9rem; color: #a7f3d0;">
+                ရွေးချယ်ထားသည့်ပက်ကေ့ချ် - <span id="summaryPack" style="font-weight: bold;">-</span>
+            </div>
+
+            <!-- Payment Details -->
+            <div class="form-group">
+                <label>၁။ အောက်ပါအကောင့်တစ်ခုခုသို့ ကျသင့်ငွေကို လွှဲပြောင်းပါ</label>
+                <div class="payment-box">
+                    <div class="pay-row">
+                        <span>WavePay:</span>
+                        <span class="pay-number" id="wavePayDetails">ဒေတာဆွဲယူနေဆဲ...</span>
+                    </div>
+                    <div class="pay-row">
+                        <span>KBZPay:</span>
+                        <span class="pay-number" id="kpayDetails">ဒေတာဆွဲယူနေဆဲ...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screenshot Upload -->
+            <div class="form-group">
+                <label>၂။ Ngwe လွှဲပြေစာ (Screenshot) ပုံထည့်ပါ</label>
+                <div class="file-upload-wrapper">
+                    <span style="font-size: 1.3rem; display:block; margin-bottom:5px;">📷</span>
+                    <span id="uploadText" style="font-size: 0.85rem; color:#cbd5e1;">ငွေလွှဲဓာတ်ပုံ ဤနေရာတွင် တင်ပါ</span>
+                    <input type="file" accept="image/*" onchange="previewFile(this)">
+                </div>
+            </div>
+
+            <button class="submit-btn" id="submitBtn" onclick="submitDirectOrder()">ဝယ်ယူမှုအတည်ပြုမည် ➔</button>
+        </div>
+    </div>
+
+
+    <!-- ==================== SMALL POPUPS & OVERLAYS ==================== -->
+    <div class="popup-overlay" id="popupOverlay" onclick="closeAllPopups()"></div>
+
+    <!-- မက်ဆေ့များ -->
+    <div class="box-popup" id="msgPopup">
+        <h3 style="color:#38bdf8; margin-bottom:15px;">💬 မက်ဆေ့များ</h3>
+        <div id="messageList">
+            <p style="font-size:0.9rem; color:#94a3b8;">ယခုအချိန်တွင် အကြောင်းကြားစာ အသစ်မရှိသေးပါရှင်။</p>
+        </div>
+    </div>
+
+    <!-- အော်ဒါများ -->
+    <div class="box-popup" id="orderPopup">
+        <h3 style="color:#10b981; margin-bottom:15px;">📋 လက်ရှိအော်ဒါများ (စောင့်ဆိုင်းဆဲ)</h3>
+        <div id="activeOrderList">
+            <p style="font-size:0.9rem; color:#94a3b8;">လုပ်ဆောင်ဆဲ အော်ဒါမရှိသေးပါ။</p>
+        </div>
+    </div>
+
+    <!-- ဝယ်ယူမှုမှတ်တမ်း -->
+    <div class="box-popup" id="historyPopup">
+        <h3 style="color:#94a3b8; margin-bottom:15px;">📜 ဝယ်ယူမှုမှတ်တမ်း</h3>
+        <div id="historyOrderList">
+            <p style="font-size:0.9rem; color:#64748b;">အောင်မြင်ပြီးစီးခဲ့သော အော်ဒါမှတ်တမ်းများ မရှိသေးပါ။</p>
+        </div>
+    </div>
+
+    <!-- ကံစမ်းရန် -->
+    <div class="box-popup" id="luckyPopup">
+        <h3 style="color:#ef4444; margin-bottom:10px;">🎁 ကံစမ်းမဲအစီအစဉ်</h3>
+        <p style="font-size:0.9rem; color:#cbd5e1; text-align:center;">မကြာမီ လာမည်... စောင့်မျှော်ပေးပါဦး။</p>
+    </div>
+
+    <!-- အသုံးပြုနည်းလမ်းညွှန် -->
+    <div class="box-popup" id="guidePopup">
+        <h3 style="color:#38bdf8; margin-bottom:10px;">ℹ️ ဝယ်ယူနည်း လမ်းညွှန်ချက်</h3>
+        <p style="font-size:0.85rem; color:#cbd5e1; line-height: 1.6;">
+            ၁။ မိမိဝယ်လိုသော ဂိမ်းအမျိုးအစားကို ရွေးချယ်ပါ။<br>
+            ၂။ မိမိလိုချင်သော Package ဘေးမှ "Buy Now" ကို နှိပ်ပါ။<br>
+            ၃။ Player ID ၊ Server ID ဖြည့်ပြီး ဖော်ပြထားသော ဖုန်းနံပါတ်သို့ ငွေလွှဲပါ။<br>
+            ၄။ Ngwe လွှဲပြေစာပြတ် (Screenshot) တင်ပြီး အတည်ပြုချက်ကို နှိပ်ပါ။
+        </p>
+    </div>
+
+
+    <!-- ==================== JAVASCRIPT CONTROLS ==================== -->
+    <script>
+        let selectedGameKey = '';
+        let selectedPackageName = '';
+
+        // Local Storage Sync Utilities (Moved into pure scope)
+        function getMyOrderIds() {
+            const saved = localStorage.getItem('my_order_ids');
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        function saveMyOrderId(orderId) {
+            const currentIds = getMyOrderIds();
+            currentIds.push(orderId);
+            localStorage.setItem('my_order_ids', JSON.stringify(currentIds));
+            // Trigger dynamic window refresh event to force immediate sync update
+            window.dispatchEvent(new Event('storage'));
+        }
+
+        // Small Popups Controls
+        function openPopup(id) {
+            document.getElementById('popupOverlay').style.display = 'block';
+            document.getElementById(id).style.display = 'block';
+        }
+
+        function closeAllPopups() {
+            document.getElementById('popupOverlay').style.display = 'none';
+            const popups = document.querySelectorAll('.box-popup');
+            popups.forEach(p => p.style.display = 'none');
+        }
+
+        // File Upload Text Preview
+        function previewFile(input) {
+            if(input.files && input.files[0]) {
+                const fileName = input.files[0].name;
+                document.getElementById('uploadText').innerText = "ရွေးချယ်ပြီးစီးပြီ- " + fileName;
+                document.getElementById('uploadText').style.color = "#38bdf8";
+            }
+        }
+    </script>
+
+    <!-- ==================== FIREBASE REAL-TIME INTEGRATION ==================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, collection, onSnapshot, addDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDE13cBzGmbPz7N_Gpom3gsoDqK0Vak6ho",
+            authDomain: "burma-s-finest.firebaseapp.com",
+            projectId: "burma-s-finest",
+            storageBucket: "burma-s-finest.firebasestorage.app",
+            messagingSenderId: "583278696300",
+            appId: "1:583278696300:web:bf3d863ba21377a674c549",
+            measurementId: "G-1GQH273BHL"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let allProducts = [];
+
+        // 1. Real-time Payment Accounts Listener
+        onSnapshot(collection(db, "payment_settings"), (snapshot) => {
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                if(doc.id === "kpay") {
+                    document.getElementById("kpayDetails").innerText = `${data.accountNumber || "ပိတ်ထားပါသည်"} (${data.accountName || ""})`;
+                }
+                if(doc.id === "wave") {
+                    document.getElementById("wavePayDetails").innerText = `${data.accountNumber || "ပိတ်ထားပါသည်"} (${data.accountName || ""})`;
+                }
+            });
+        });
+
+        // 2. Real-time Products Data Listener (Fixed Admin Banner rendering trigger logic)
+        onSnapshot(collection(db, "products"), (snapshot) => {
+            allProducts = [];
+            snapshot.forEach((doc) => {
+                allProducts.push({ id: doc.id, ...doc.data() });
+            });
+            // If the checkout modal is active during real-time updates, refresh it dynamically
+            if (document.getElementById('checkoutModal').style.display === 'flex' && selectedGameKey) {
+                window.openCheckout(selectedGameKey, document.getElementById('checkoutTitle').innerText);
+            }
+        });
+
+        // 3. Real-time Admin Messages & User Order Updates Listener
+        const messagesQuery = query(collection(db, "messages"), orderBy("timestamp", "desc"));
+        onSnapshot(messagesQuery, (snapshot) => {
+            renderIntegratedMessages();
+        });
+
+        // 4. Real-time Orders Listener & Dynamic Message Sync Handler
+        let cachedOrders = [];
+        const ordersQuery = query(collection(db, "orders"), orderBy("timestamp", "desc"));
+        
+        onSnapshot(ordersQuery, (snapshot) => {
+            cachedOrders = [];
+            const activeOrderList = document.getElementById("activeOrderList");
+            const historyOrderList = document.getElementById("historyOrderList");
+
+            activeOrderList.innerHTML = "";
+            historyOrderList.innerHTML = "";
+
+            let activeCount = 0;
+            let historyCount = 0;
+            const myIds = getMyOrderIds();
+
+            snapshot.forEach((doc) => {
+                const orderId = doc.id;
+                const order = doc.data();
+                
+                if (myIds.includes(orderId)) {
+                    cachedOrders.push({ id: orderId, ...order });
+                    const status = order.status || "pending";
+                    const dateStr = order.timestamp ? new Date(order.timestamp.seconds * 1000).toLocaleString('my-MM') : 'ယခုတင်';
+
+                    let statusLabel = "စောင့်ဆိုင်းဆဲ";
+                    let statusClass = "status-pending";
+                    if (status === "completed" || status === "success") {
+                        statusLabel = "အောင်မြင်သည်";
+                        statusClass = "status-completed";
+                    } else if (status === "cancelled" || status === "failed") {
+                        statusLabel = "ပယ်ဖျက်လိုက်သည်";
+                        statusClass = "status-cancelled";
+                    }
+
+                    const itemHtml = `
+                        <div class="live-item">
+                            <div class="live-item-header">
+                                <span style="font-weight:bold; color:#38bdf8;">${order.gameName || "Game Top Up"}</span>
+                                <span class="status-badge ${statusClass}">${statusLabel}</span>
+                            </div>
+                            <div style="font-size:0.85rem; color:#cbd5e1; margin-bottom:4px;">
+                                <strong>ID:</strong> ${order.playerId || "မရှိပါ"} ${order.serverId ? `(${order.serverId})` : ''}<br>
+                                <strong>ပမာဏ:</strong> ${order.packageName || "မရှိပါ"}
+                            </div>
+                            <div style="font-size:0.75rem; color:#64748b; text-align:right;">
+                                ${dateStr}
+                            </div>
+                        </div>
+                    `;
+
+                    if (status === "pending") {
+                        activeOrderList.insertAdjacentHTML('beforeend', itemHtml);
+                        activeCount++;
+                    } else {
+                        historyOrderList.insertAdjacentHTML('beforeend', itemHtml);
+                        historyCount++;
+                    }
+                }
+            });
+
+            if (activeCount === 0) activeOrderList.innerHTML = `<p style="font-size:0.9rem; color:#94a3b8; text-align:center;">လုပ်ဆောင်ဆဲ အော်ဒါမရှိသေးပါ။</p>`;
+            if (historyCount === 0) historyOrderList.innerHTML = `<p style="font-size:0.9rem; color:#64748b; text-align:center;">အောင်မြင်ပြီးစီးခဲ့သော အော်ဒါမှတ်တမ်းများ မရှိသေးပါ။</p>`;
+            
+            // Trigger dynamic message integration update
+            renderIntegratedMessages();
+        });
+
+        // 4.5. Function to render and merge system notices and order updates into Message Box
+        function renderIntegratedMessages() {
+            const messageListDiv = document.getElementById("messageList");
+            messageListDiv.innerHTML = "";
+
+            let messageItems = [];
+
+            // Add personal order updates to messages list
+            cachedOrders.forEach(order => {
+                const status = order.status || "pending";
+                const time = order.timestamp ? new Date(order.timestamp.seconds * 1000) : new Date();
+                const displayTime = time.toLocaleString('my-MM');
+                
+                let orderMsgText = "";
+                let borderColor = "#38bdf8";
+
+                if (status === "pending") {
+                    orderMsgText = `သင်ဝယ်ယူထားသော ${order.gameName} (${order.packageName}) အတွက် အော်ဒါ တင်ခြင်း အောင်မြင်ပါတယ် ၁၅ မိနစ် အတွင်းရောက်ရှိလာမှာ ဖြစ်ပါတယ်ရှင်။`;
+                    borderColor = "#f59e0b"; 
+                } else if (status === "completed" || status === "success") {
+                    orderMsgText = `သင်ဝယ်ယူထားသော ${order.gameName} (${order.packageName}) အတွက် အော်ဒါအား ဖြည့်သွင်းပြီးပါပြီ ဝယ်ယူမှုအတွက်အထူးကျေးဇူးတင်ပါတယ်ရှင်...`;
+                    borderColor = "#10b981"; 
+                } else if (status === "cancelled" || status === "failed") {
+                    orderMsgText = `သင်ဝယ်ယူထားသော ${order.gameName} (${order.packageName}) အော်ဒါမှာ ဖြည့်သွင်း၍မရနိုင်ပါ Admin Team အားဆက်သွယ်ပါရှင်။`;
+                    borderColor = "#ef4444"; 
+                }
+
+                messageItems.push({
+                    timestamp: time,
+                    html: `
+                        <div class="message-box" style="border-left-color: ${borderColor};">
+                            <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#64748b; margin-bottom:4px;">
+                                <strong>🛒 ORDER STATUS UPDATE</strong>
+                                <span>${displayTime}</span>
+                            </div>
+                            <p style="font-size:0.9rem; color:#f1f5f9; white-space: pre-wrap;">${orderMsgText}</p>
+                        </div>
+                    `
+                });
+            });
+
+            // If empty, display placeholders
+            if (messageItems.length === 0) {
+                messageListDiv.innerHTML = `<p style="font-size:0.9rem; color:#94a3b8; text-align:center;">ယခုအချိန်တွင် အကြောင်းကြားစာ အသစ်မရှိသေးပါရှင်။</p>`;
+                return;
+            }
+
+            // Sort merged notifications by latest first
+            messageItems.sort((a, b) => b.timestamp - a.timestamp);
+
+            messageItems.forEach(item => {
+                messageListDiv.insertAdjacentHTML('beforeend', item.html);
+            });
+        }
+        
+        // Initial setup run & runtime event tracker listeners
+        window.addEventListener('storage', () => {
+            renderIntegratedMessages();
+        });
+
+        // 5. Open Checkout & Render Interactive Package Cards
+        window.openCheckout = function(gameKey, gameTitle) {
+            selectedGameKey = gameKey;
+            document.getElementById('checkoutTitle').innerText = gameTitle;
+            document.getElementById('bannerGameText').innerText = gameTitle;
+            document.getElementById('dynamicOrderSection').style.display = 'none';
+
+            if(gameKey === 'mlbb') {
+                document.getElementById('serverIdGroup').style.display = 'block';
+            } else {
+                document.getElementById('serverIdGroup').style.display = 'none';
+            }
+
+            const container = document.getElementById("packageListContainer");
+            container.innerHTML = "";
+
+            const filtered = allProducts.filter(p => p.game === gameKey);
+
+            // Fixed Banner Image detection logic
+            const bannerDiv = document.getElementById("gameBanner");
+            const hasCustomImage = filtered.find(p => p.imageUrl || p.gameImage);
+            
+            if (hasCustomImage) {
+                const finalImgUrl = hasCustomImage.imageUrl || hasCustomImage.gameImage;
+                bannerDiv.style.backgroundImage = `linear-gradient(to top, rgba(15,23,42,0.95), rgba(15,23,42,0.3)), url('${finalImgUrl}')`;
+            } else {
+                bannerDiv.style.backgroundImage = `linear-gradient(135deg, #0284c7 0%, #0f172a 100%)`;
+            }
+
+            if(filtered.length === 0) {
+                container.innerHTML = `<p style="font-size:0.9rem; color:#94a3b8; text-align:center; padding: 20px;">ယခုဂိမ်းအတွက် ဈေးနှုန်းဇယား မရှိသေးပါရှင်။</p>`;
+            } else {
+                filtered.forEach(prod => {
+                    const card = document.createElement("div");
+                    card.className = "pack-card";
+                    card.id = `pack-${prod.id}`;
+                    card.innerHTML = `
+                        <div class="pack-info">
+                            <h4>💎 ${prod.packageName}</h4>
+                            <p>${Number(prod.price).toLocaleString()} ကျပ်</p>
+                        </div>
+                        <button class="buy-now-btn" id="btn-${prod.id}">Buy Now</button>
+                    `;
+                    container.appendChild(card);
+                    
+                    document.getElementById(`btn-${prod.id}`).onclick = function() {
+                        window.activateBuyNow(prod.id, prod.packageName, Number(prod.price).toLocaleString() + " ကျပ်");
+                    };
+                });
+            }
+
+            document.getElementById('checkoutModal').style.display = 'flex';
+        }
+
+        window.activateBuyNow = function(prodId, packageName, priceText) {
+            document.querySelectorAll('.pack-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById(`pack-${prodId}`).classList.add('selected');
+            
+            selectedPackageName = packageName;
+            document.getElementById('summaryPack').innerText = `${packageName} (${priceText})`;
+
+            const inputSection = document.getElementById('dynamicOrderSection');
+            inputSection.style.display = 'block';
+            inputSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        window.closeCheckout = function() {
+            document.getElementById('checkoutModal').style.display = 'none';
+            document.getElementById('playerId').value = '';
+            document.getElementById('serverId').value = '';
+            document.getElementById('uploadText').innerText = "ငွေလွှဲဓာတ်ပုံ ဤနေရာတွင် တင်ပါ";
+            document.getElementById('uploadText').style.color = "#cbd5e1";
+            selectedPackageName = '';
+        }
+
+        // 6. Submit Order Action with absolute tracking integration fixes
+        window.submitDirectOrder = async function() {
+            const idInput = document.getElementById('playerId').value.trim();
+            const serverInput = document.getElementById('serverId').value.trim();
+            const gameTitle = document.getElementById('checkoutTitle').innerText;
+
+            if(!idInput) {
+                alert("ကျေးဇူးပြု၍ Player ID ရိုက်ထည့်ပေးပါဗျာ။");
+                return;
+            }
+            if(selectedGameKey === 'mlbb' && !serverInput) {
+                alert("ကျေးဇူးပြု၍ Server ID ရိုက်ထည့်ပေးပါဗျာ။");
+                return;
+            }
+            if(!selectedPackageName) {
+                alert("ကျေးဇူးပြု၍ ဝယ်ယူမည့် ပက်ကေ့ချ်ကို ရွေးချယ်ပေးပါ။");
+                return;
+            }
+
+            try {
+                const docRef = await addDoc(collection(db, "orders"), {
+                    gameName: gameTitle,
+                    gameKey: selectedGameKey,
+                    playerId: idInput,
+                    serverId: selectedGameKey === 'mlbb' ? serverInput : "",
+                    packageName: selectedPackageName,
+                    status: "pending",
+                    timestamp: new Date()
+                });
+
+                // Global function execution triggers state rendering correctly
+                saveMyOrderId(docRef.id);
+
+                alert("လူကြီးမင်း၏ ပြေစာနှင့် အော်ဒါကို လက်ခံရရှိပါပြီ။ ခေတ္တစောင့်ဆိုင်းပေးပါရှင်။");
+                window.closeCheckout();
+            } catch (e) {
+                console.error("Order error: ", e);
+                alert("အော်ဒါတင်ခြင်း မအောင်မြင်ပါ။ နောက်မှ ပြန်ကြိုးစားပါ။");
+            }
+        }
+    </script>
+</body>
+</html>
