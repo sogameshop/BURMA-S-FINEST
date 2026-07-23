@@ -7,19 +7,31 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: linear-gradient(135deg, #2d1b4e, #0b0e14); color: #ffffff; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; font-size: 14px; }
+        
+        /* ===== FIX: Use dvh for dynamic viewport height ===== */
+        body { 
+            background: linear-gradient(135deg, #2d1b4e, #0b0e14); 
+            color: #ffffff; 
+            height: 100dvh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden; 
+            font-size: 14px; 
+        }
         
         /* ===== FIX: app-container with overflow hidden ===== */
         .app-container { 
             width: 100%; 
-            height: 100%; 
+            height: 100dvh; 
             max-width: 400px; 
             background: rgba(255, 255, 255, 0.05); 
             display: flex; 
             flex-direction: column; 
             border-left: 1px solid rgba(255,255,255,0.1); 
             border-right: 1px solid rgba(255,255,255,0.1);
-            overflow: hidden; /* Prevent container scrolling */
+            overflow: hidden;
+            position: relative;
         }
         
         header { 
@@ -28,7 +40,7 @@
             justify-content: space-between; 
             align-items: center; 
             background: rgba(45, 27, 78, 0.8);
-            flex-shrink: 0; /* Don't shrink header */
+            flex-shrink: 0;
         }
         
         .logo { font-size: 1rem; font-weight: 600; color: #d6b4ff; line-height: 1.2; }
@@ -41,8 +53,8 @@
             overflow-y: auto; 
             padding: 20px; 
             transition: opacity 0.3s;
-            min-height: 0; /* Important for flex scrolling */
-            -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+            min-height: 0;
+            -webkit-overflow-scrolling: touch;
         }
         
         h3 { font-size: 1.1rem; margin-bottom: 10px; color: #ffffff; }
@@ -206,7 +218,7 @@
             background: rgba(45, 27, 78, 0.95);
             border-top: 1px solid #6b21a8;
             height: 60px;
-            flex-shrink: 0; /* Don't shrink nav */
+            flex-shrink: 0;
             position: relative;
             z-index: 10;
         }
