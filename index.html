@@ -8,12 +8,43 @@
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: linear-gradient(135deg, #2d1b4e, #0b0e14); color: #ffffff; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; font-size: 14px; }
-        .app-container { width: 100%; height: 100%; max-width: 400px; background: rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1); }
-        header { padding: 16px; display: flex; justify-content: space-between; align-items: center; background: rgba(45, 27, 78, 0.8); }
+        
+        /* ===== FIX: app-container with overflow hidden ===== */
+        .app-container { 
+            width: 100%; 
+            height: 100%; 
+            max-width: 400px; 
+            background: rgba(255, 255, 255, 0.05); 
+            display: flex; 
+            flex-direction: column; 
+            border-left: 1px solid rgba(255,255,255,0.1); 
+            border-right: 1px solid rgba(255,255,255,0.1);
+            overflow: hidden; /* Prevent container scrolling */
+        }
+        
+        header { 
+            padding: 16px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: rgba(45, 27, 78, 0.8);
+            flex-shrink: 0; /* Don't shrink header */
+        }
+        
         .logo { font-size: 1rem; font-weight: 600; color: #d6b4ff; line-height: 1.2; }
         .logo span { display: block; font-size: 0.75rem; color: #ffffff; letter-spacing: 1px; }
         .profile-img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #d6b4ff; }
-        #content-area { flex: 1; overflow-y: auto; padding: 20px; transition: opacity 0.3s; }
+        
+        /* ===== FIX: content-area with flex and scroll ===== */
+        #content-area { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 20px; 
+            transition: opacity 0.3s;
+            min-height: 0; /* Important for flex scrolling */
+            -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+        }
+        
         h3 { font-size: 1.1rem; margin-bottom: 10px; color: #ffffff; }
         .form-group { margin-bottom: 10px; }
         .form-group input, .form-group select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #6b21a8; background: rgba(255,255,255,0.05); color: white; font-size: 0.9rem; }
@@ -166,7 +197,7 @@
             text-shadow: 0 0px 0 #7f1d1d;
         }
 
-        /* 3D Nav Items */
+        /* ===== FIX: nav with flex-shrink: 0 ===== */
         nav {
             display: flex;
             justify-content: space-around;
@@ -175,7 +206,11 @@
             background: rgba(45, 27, 78, 0.95);
             border-top: 1px solid #6b21a8;
             height: 60px;
+            flex-shrink: 0; /* Don't shrink nav */
+            position: relative;
+            z-index: 10;
         }
+        
         .nav-item {
             color: #aaa;
             cursor: pointer;
@@ -379,7 +414,7 @@
             font-size: 1rem;
         }
 
-        /* ===== REMAINING STYLES (UNCHANGED) ===== */
+        /* ===== REMAINING STYLES ===== */
         #order-overlay {
             position: fixed;
             top: 0;
@@ -638,7 +673,7 @@
 <div class="app-container">
     <header>
         <div class="logo">BURMA'S FINEST <span>GAME SHOP</span></div>
-        <img src="https://i.ibb.co/5hvsZJRv/lv-0-20260718155825.jpg" alt="Profile" class="profile-img">
+        <img src="https://i.ibb.co/5hvsZJRv/lv-0-20260718155825.jpg" alt="Profile" class="profile-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2235%22 height=%2235%22 viewBox=%220 0 35 35%22%3E%3Crect width=%2235%22 height=%2235%22 fill=%22%23333%22/%3E%3Ctext x=%2217.5%22 y=%2222%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2216%22 font-family=%22sans-serif%22%3E👤%3C/text%3E%3C/svg%3E'">
     </header>
     <div id="content-area"></div>
     <nav id="nav-bar">
@@ -879,7 +914,7 @@
     function renderBannerHTML() {
         let html = '<div class="banner-container">';
         bannerImages.forEach((url, index) => {
-            html += `<img src="${url}" alt="Banner ${index+1}" class="banner-slide ${index === 0 ? '' : 'hidden'}">`;
+            html += `<img src="${url}" alt="Banner ${index+1}" class="banner-slide ${index === 0 ? '' : 'hidden'}" onerror="this.src='https://via.placeholder.com/400x225/2d1b4e/ffffff?text=BURMA%27S+FINEST'">`;
         });
         html += '</div>';
         html += `
@@ -1243,10 +1278,10 @@
                     ${renderBannerHTML()}
                     <h3>Select Game</h3>
                     <div class="game-grid">
-                        <div class="game-card-btn" onclick="loadProductPage('MLBB')"><img src="https://i.ibb.co/HpP981Qh/01-KMXJN1-QHHBWBZRPFFFV2-F0-MN.jpg"><span>MLBB</span></div>
-                        <div class="game-card-btn" onclick="loadProductPage('PUBG')"><img src="https://i.ibb.co/67WxTLt4/01-KMXK8-JY00-G4-R7-Z58-JDZXMNT1.jpg"><span>PUBG</span></div>
-                        <div class="game-card-btn" onclick="loadProductPage('FREE FIRE')"><img src="https://i.ibb.co/27S2WJWB/01-KFMA7-RY9-X45-QRD0-C1-RG45-ARR.png"><span>FREE FIRE</span></div>
-                        <div class="game-card-btn" onclick="loadProductPage('HOK')"><img src="https://i.ibb.co/BHdKCSdz/01-KBZXKHFKVR6-SYTBCPAC344-EA.jpg"><span>HOK</span></div>
+                        <div class="game-card-btn" onclick="loadProductPage('MLBB')"><img src="https://i.ibb.co/HpP981Qh/01-KMXJN1-QHHBWBZRPFFFV2-F0-MN.jpg" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23333%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2212%22 font-family=%22sans-serif%22%3EMLBB%3C/text%3E%3C/svg%3E'"><span>MLBB</span></div>
+                        <div class="game-card-btn" onclick="loadProductPage('PUBG')"><img src="https://i.ibb.co/67WxTLt4/01-KMXK8-JY00-G4-R7-Z58-JDZXMNT1.jpg" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23333%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2212%22 font-family=%22sans-serif%22%3EPUBG%3C/text%3E%3C/svg%3E'"><span>PUBG</span></div>
+                        <div class="game-card-btn" onclick="loadProductPage('FREE FIRE')"><img src="https://i.ibb.co/27S2WJWB/01-KFMA7-RY9-X45-QRD0-C1-RG45-ARR.png" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23333%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2212%22 font-family=%22sans-serif%22%3EFF%3C/text%3E%3C/svg%3E'"><span>FREE FIRE</span></div>
+                        <div class="game-card-btn" onclick="loadProductPage('HOK')"><img src="https://i.ibb.co/BHdKCSdz/01-KBZXKHFKVR6-SYTBCPAC344-EA.jpg" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23333%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2212%22 font-family=%22sans-serif%22%3EHOK%3C/text%3E%3C/svg%3E'"><span>HOK</span></div>
                     </div>
                 `;
                 setTimeout(startBannerSlideshow, 100);
